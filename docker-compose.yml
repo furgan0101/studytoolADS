@@ -1,0 +1,8 @@
+services:
+  exam-trainer:
+    build: .
+    image: exam-trainer
+    container_name: exam-trainer
+    ports:
+      - "8080:80"
+    restart: unless-stopped
