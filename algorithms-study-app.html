@@ -112,6 +112,15 @@ kbd{font-family:"JetBrains Mono",monospace;font-size:.62rem;background:var(--pap
 .a-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:8px 4px}
 .a-lead{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.25;margin:.1em 0}
 .a-lead.verd-t{color:var(--good)}.a-lead.verd-f{color:var(--review)}
+/* multiple-choice options */
+.opts{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+.opt{font-family:"Newsreader",Georgia,serif;font-size:1.02rem;text-align:left;padding:12px 16px;border-radius:11px;
+  border:1.6px solid var(--line);background:var(--paper-2);color:var(--ink);cursor:pointer;transition:.16s;line-height:1.35}
+.opt:hover{border-color:var(--tum);color:var(--tum);transform:translateX(3px)}
+.opt.correct{background:color-mix(in srgb,var(--good) 20%,transparent);border-color:var(--good);color:var(--good);font-weight:600}
+.opt.correct::after{content:" ✓";font-weight:700}
+.opt.wrong{background:color-mix(in srgb,var(--review) 18%,transparent);border-color:var(--review);color:var(--review);text-decoration:line-through}
+.opt.correct:hover,.opt.wrong:hover{transform:none}
 .a-context{color:var(--ink-soft);font-size:1rem;margin-top:12px;font-style:italic}
 .flip-cue{position:absolute;bottom:14px;right:20px;font-family:"JetBrains Mono",monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);opacity:.8;display:flex;align-items:center;gap:6px;pointer-events:none}
 .flip-cue svg{width:12px;height:12px}
@@ -252,11 +261,26 @@ const IMG=[
 
 /* MC / matching: front = cropped question image (img/q-t{t}-{prob}-{letter}.png),
    back = answer. `img:false` or a `text{}` entry => text front instead (needs no image). */
+/* shared option sets */
+const PARA=["Divide & Conquer","Incremental","Greedy","Dynamic Programming","Other"];
+const YN=["Yes","No"];
+const CPLX=["O(log n)","O(n)","O(n log n)","O(n²)","O(n³)","O(2ⁿ)"];
+const CPLX4=["O(1)","O(log n)","O(n)","O(n log n)"];
+const THETA=["Θ(log n)","Θ(n)","Θ(n log n)","Θ(n²)"];
+const TRAV=["Root → Left → Right","Left → Root → Right","Left → Right → Root"];
+const IDX=["⌊i/2⌋","2i","2i+1"];
+const SORTSET=["InsertionSort, MergeSort","InsertionSort, HeapSort","MergeSort, HeapSort","All three"];
+const MTCOND=["f(n) = O(n^(log_b a − ε))","f(n) = Θ(n^(log_b a))","f(n) = Ω(n^(log_b a + ε)) + regularity condition"];
+const MTRES=["Θ(n^(log_b a))","Θ(n^(log_b a) · log n)","Θ(f(n))"];
+const ASYM=["Grows at most as fast as g","Grows at least as fast as g","Same asymptotic growth as g","Grows strictly slower than g","Grows strictly faster than g"];
+const BHNODES=["2^(2k) − 1","2^k − 1","2k","2^(2k)"];
+
+/* concept cards: [question, answer, optionsOverride?] ; group `opts` used otherwise */
 const CONCEPTS=[
- {topic:"Paradigms",items:[
-  ["QuickSort paradigm?","Divide &amp; Conquer"],
-  ["MergeSort paradigm?","Divide &amp; Conquer"],
-  ["Binary Search paradigm?","Divide &amp; Conquer"],
+ {topic:"Paradigms",opts:PARA,items:[
+  ["QuickSort paradigm?","Divide & Conquer"],
+  ["MergeSort paradigm?","Divide & Conquer"],
+  ["Binary Search paradigm?","Divide & Conquer"],
   ["SelectionSort paradigm?","Incremental"],
   ["InsertionSort paradigm?","Incremental"],
   ["Partition algorithm paradigm?","Other"],
@@ -267,47 +291,50 @@ const CONCEPTS=[
   ["0-1 Knapsack paradigm?","Dynamic Programming"],
   ["Rod Cutting paradigm?","Dynamic Programming"],
   ["Activity Selection paradigm?","Greedy"],
-  ["Shannon-Fano Encoding paradigm?","Divide &amp; Conquer"]]},
- {topic:"Dynamic Programming",items:[
-  ["Two properties required for Dynamic Programming?","Overlapping subproblems + Optimal substructure"],
+  ["Shannon-Fano Encoding paradigm?","Divide & Conquer"]]},
+ {topic:"Dynamic Programming",opts:YN,items:[
+  ["Two properties required for Dynamic Programming?","Overlapping subproblems + Optimal substructure",
+    ["Overlapping subproblems + Optimal substructure","Greedy-choice property + Optimal substructure","Overlapping subproblems + Independent subproblems","Optimal substructure + Monotone substructure"]],
   ["Does Matrix Chain Multiplication have optimal substructure?","Yes"],
   ["Does Matrix Chain Multiplication have overlapping subproblems?","Yes"],
   ["Does Rod Cutting have overlapping subproblems?","Yes"],
   ["Does LCS satisfy greedy choice?","No"]]},
- {topic:"Sorting",items:[
-  ["Stable sorting algorithms?","InsertionSort, MergeSort"],
-  ["In-place sorting algorithms?","InsertionSort, HeapSort"],
+ {topic:"Sorting",opts:THETA,items:[
+  ["Stable sorting algorithms?","InsertionSort, MergeSort",SORTSET],
+  ["In-place sorting algorithms?","InsertionSort, HeapSort",SORTSET],
   ["Merge() runtime?","Θ(n)"],
   ["MaxHeapify runtime?","Θ(log n)"],
   ["InsertionSort worst-case runtime?","Θ(n²)"],
   ["MergeSort runtime?","Θ(n log n)"],
   ["HeapSort runtime?","Θ(n log n)"]]},
- {topic:"Heaps",items:[
-  ["Height of an n-element heap?","⌊log₂ n⌋"],
+ {topic:"Heaps",opts:IDX,items:[
+  ["Height of an n-element heap?","⌊log₂ n⌋",["⌊log₂ n⌋","⌈log₂ n⌉","log₂ n","n − 1"]],
   ["Parent of index i?","⌊i/2⌋"],
   ["Left child of i?","2i"],
   ["Right child of i?","2i+1"],
-  ["Leaf indices in an array heap?","⌊n/2⌋+1 … n"],
-  ["Why is a node a leaf iff 2i &gt; n?","Because no left child exists."]]},
- {topic:"Binary Trees",items:[
+  ["Leaf indices in an array heap?","⌊n/2⌋+1 … n",["⌊n/2⌋+1 … n","1 … ⌊n/2⌋","⌈n/2⌉ … n","⌊n/2⌋ … n"]],
+  ["Why is a node a leaf iff 2i > n?","Because no left child exists.",
+    ["Because no left child exists.","Because no parent exists.","Because the heap is full.","Because the node is on the last level."]]]},
+ {topic:"Binary Trees",opts:TRAV,items:[
   ["Preorder traversal?","Root → Left → Right"],
   ["Inorder traversal?","Left → Root → Right"],
   ["Postorder traversal?","Left → Right → Root"],
-  ["Inorder traversal of a BST gives?","Sorted order"]]},
- {topic:"Red-Black Trees",items:[
-  ["Height of an RB tree?","≤ 2·log₂(n+1)"],
+  ["Inorder traversal of a BST gives?","Sorted order",["Sorted order","Reverse sorted order","Level order","Insertion order"]]]},
+ {topic:"Red-Black Trees",opts:CPLX4,items:[
+  ["Height of an RB tree?","≤ 2·log₂(n+1)",["≤ 2·log₂(n+1)","≤ log₂(n+1)","≤ 2·log₂ n","≤ n/2"]],
   ["Find in an RB tree?","O(log n)"],
   ["Delete in an RB tree?","O(log n)"],
-  ["Are leaves red?","No — NIL leaves are black"],
-  ["Can one NIL sentinel be shared by all leaves?","Yes"],
-  ["Root's parent?","NIL"],
-  ["Black-height counts which nodes?","Black nodes on a path from x to a leaf — excluding x, including the NIL leaf"],
-  ["Maximum internal nodes with black-height k?","2^(2k) − 1"],
-  ["Minimum internal nodes with black-height k?","2^k − 1"]]},
- {topic:"BST",items:[
+  ["Are leaves red?","No — NIL leaves are black",["No — NIL leaves are black","Yes, always","Only if the parent is black","Only the root's leaves"]],
+  ["Can one NIL sentinel be shared by all leaves?","Yes",YN],
+  ["Root's parent?","NIL",["NIL","The root itself","A red node","The last inserted node"]],
+  ["Black-height counts which nodes?","Black nodes on a path from x to a leaf — excluding x, including the NIL leaf",
+    ["Black nodes on a path from x to a leaf — excluding x, including the NIL leaf","Black nodes including both x and the NIL leaf","All nodes on a path from x to a leaf","Red nodes on a path from x to a leaf"]],
+  ["Maximum internal nodes with black-height k?","2^(2k) − 1",BHNODES],
+  ["Minimum internal nodes with black-height k?","2^k − 1",BHNODES]]},
+ {topic:"BST",opts:CPLX4,items:[
   ["Worst-case FIND in a BST?","O(n)"],
-  ["Can every BST be transformed into another BST with the same keys using rotations?","Yes"]]},
- {topic:"Complexity",items:[
+  ["Can every BST be transformed into another BST with the same keys using rotations?","Yes",YN]]},
+ {topic:"Complexity",opts:CPLX,items:[
   ["Huffman algorithm runtime?","O(n log n)"],
   ["Optimal Activity Selection (already sorted)?","O(n)"],
   ["Minimum Water Stops?","O(n)"],
@@ -317,38 +344,40 @@ const CONCEPTS=[
   ["Optimal Rod Cutting DP?","O(n²)"],
   ["Enumerating all Rod Cutting solutions?","O(2ⁿ)"],
   ["Multiplying two n×n matrices (classical)?","O(n³)"]]},
- {topic:"Greedy",items:[
-  ["Huffman's algorithm produces?","An optimal prefix code"],
+ {topic:"Greedy",opts:YN,items:[
+  ["Huffman's algorithm produces?","An optimal prefix code",
+    ["An optimal prefix code","An optimal suffix code","A balanced binary tree","A minimum spanning tree"]],
   ["Is Shannon-Fano always optimal?","No"],
   ["US coin system (25,10,5,1) — is greedy optimal?","Yes"],
   ["Coin system (30,24,12,6) — is greedy optimal?","No"],
   ["Coin system (27,9,3,1) — is greedy optimal?","Yes"]]},
  {topic:"Hashing",items:[
-  ["Uniform hash — probability of any given slot?","1 / n"],
-  ["How many insertions guarantee a collision?","n + 1"],
-  ["If k slots are occupied, collision probability?","k / n"]]},
- {topic:"Asymptotic notation",items:[
+  ["Uniform hash — probability of any given slot?","1 / n",["1 / n","1 / i","n","1 / C(n,2)"]],
+  ["How many insertions guarantee a collision?","n + 1",["n + 1","n","2n","2n + 1"]],
+  ["If k slots are occupied, collision probability?","k / n",["k / n","1 / n","n / k","C(k,2) / n"]]]},
+ {topic:"Asymptotic notation",opts:ASYM,items:[
   ["O(g(n)) means?","Grows at most as fast as g"],
   ["Ω(g(n)) means?","Grows at least as fast as g"],
   ["Θ(g(n)) means?","Same asymptotic growth as g"],
   ["o(g(n)) means?","Grows strictly slower than g"],
   ["ω(g(n)) means?","Grows strictly faster than g"]]},
  {topic:"Master Theorem",items:[
-  ["Case 1 condition?","f(n) = O(n^(log_b a − ε))"],
-  ["Case 1 result?","Θ(n^(log_b a))"],
-  ["Case 2 condition?","f(n) = Θ(n^(log_b a))"],
-  ["Case 2 result?","Θ(n^(log_b a) · log n)"],
-  ["Case 3 condition?","f(n) = Ω(n^(log_b a + ε)) + regularity condition"],
-  ["Case 3 result?","Θ(f(n))"]]},
- {topic:"Growth Rates",items:[
-  ["log(2ⁿ) = ?","n"],
-  ["Which grows faster: n log n or n?","n log n"],
+  ["Case 1 condition?","f(n) = O(n^(log_b a − ε))",MTCOND],
+  ["Case 1 result?","Θ(n^(log_b a))",MTRES],
+  ["Case 2 condition?","f(n) = Θ(n^(log_b a))",MTCOND],
+  ["Case 2 result?","Θ(n^(log_b a) · log n)",MTRES],
+  ["Case 3 condition?","f(n) = Ω(n^(log_b a + ε)) + regularity condition",MTCOND],
+  ["Case 3 result?","Θ(f(n))",MTRES]]},
+ {topic:"Growth Rates",opts:YN,items:[
+  ["log(2ⁿ) = ?","n",["n","2n","log n","n log n"]],
+  ["Which grows faster: n log n or n?","n log n",["n log n","n","They grow the same"]],
   ["Do 100n and n belong to the same Θ class?","Yes"],
   ["2^(n+1) = O(2ⁿ)?","Yes"],
   ["πⁿ = O(n!)?","Yes"],
   ["2ⁿ = Θ(3ⁿ)?","No"],
   ["log n = Θ((log n)²)?","No"]]},
 ];
+
 
 
 /* build unified card list */
@@ -368,15 +397,20 @@ IMG.forEach(([t,p,kind,topic,cr,versioned,noflip,lead])=>{
 });
 CONCEPTS.forEach(b=>{
   const slug=b.topic.toLowerCase().replace(/[^a-z0-9]+/g,"-");
-  b.items.forEach(([q,a],i)=>{
+  b.items.forEach(([q,a,o],i)=>{
+    const opts=o||b.opts||[];
     CARDS.push({id:`c-${slug}-${i}`,type:"concept",t:0,prob:"",sub:"",
       kind:"concept",topic:b.topic,stem:b.topic,
-      qImg:null, lead:q, ans:a});
+      qImg:null, lead:q, ans:a, opts:opts});
   });
 });
+// sanity: every card's answer must appear among its options
+CARDS.filter(c=>c.type==="concept"&&c.opts.length&&!c.opts.includes(c.ans))
+     .forEach(c=>console.warn("answer not in options:",c.lead,"=>",c.ans));
 
 /* ============ STATE ============ */
 const IMGV="?v=4";   // bump to bust browser cache when images are regenerated
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const store=JSON.parse(localStorage.getItem("ea_progress2")||"{}");
 let fTest="all",fKind="all",fTopic="all",listMode=false;
 let deck=[],pos=0,order=[];
@@ -430,16 +464,30 @@ function renderCard(){
     el.bBody.innerHTML=`<div class="imgwrap"><img src="${c.aImg}${IMGV}" alt="solution" loading="lazy"></div>`;
     el.bHead.textContent="Sample Solution"; el.flipCue.style.display=c.noflip?"none":"";
   }else{
-    // MC / matching — question on front (image crop or text), answer on back
-    el.card.style.height="clamp(320px,46vh,480px)";
+    // concept / MC — question (+ options) on front, answer on back
+    const opts=c.opts||[];
+    el.card.style.height=opts.length?"clamp(400px,66vh,620px)":"clamp(320px,46vh,480px)";
     if(c.qImg){
       el.fBody.innerHTML=`<div class="q-body"><div class="stem">${c.stem}</div><div class="imgwrap mc"><img src="${c.qImg}${IMGV}" alt="question" loading="lazy"></div></div>`;
     }else{
-      el.fBody.innerHTML=`<div class="q-body"><div class="stem">${c.stem}</div><div class="q-lead">${c.lead}</div></div>`;
+      const list=opts.map((o,i)=>`<button type="button" class="opt" data-i="${i}">${esc(o)}</button>`).join("");
+      el.fBody.innerHTML=`<div class="q-body"><div class="stem">${esc(c.stem)}</div><div class="q-lead">${esc(c.lead)}</div>`+
+        (opts.length?`<div class="opts">${list}</div>`:``)+`</div>`;
+      el.fBody.querySelectorAll(".opt").forEach(btn=>{
+        btn.onclick=e=>{
+          e.stopPropagation();                       // don't flip the card
+          if(el.fBody.querySelector(".opt.correct")) return;   // already answered
+          el.fBody.querySelectorAll(".opt").forEach(x=>{
+            const t=opts[+x.dataset.i];
+            if(t===c.ans) x.classList.add("correct");
+            else if(x===btn) x.classList.add("wrong");
+          });
+        };
+      });
     }
     const yes=["True","Yes"].includes(c.ans), no=["False","No"].includes(c.ans);
     const verd=yes?"verd-t":no?"verd-f":"";
-    el.bBody.innerHTML=`<div class="a-body"><div class="a-lead ${verd}">${c.ans}</div><div class="a-context">${c.lead}</div></div>`;
+    el.bBody.innerHTML=`<div class="a-body"><div class="a-lead ${verd}">${esc(c.ans)}</div><div class="a-context">${esc(c.lead)}</div></div>`;
     el.bHead.textContent="Answer"; el.flipCue.style.display="";
   }
   el.bTag.textContent=c.t===0?c.topic:`Test ${c.t} · ${c.prob}`;
