@@ -218,8 +218,8 @@ footer{margin-top:70px;padding-top:22px;border-top:1px solid var(--line);font-fa
 
 <script>
 /* ============ CARD DATA ============ */
-const TEST_NAMES={1:"Test 1 · Foundations",2:"Test 2 · Sorting & Hashing",3:"Test 3 · DP & RB-Trees",4:"Test 4 · Greedy & MST"};
-const KIND_LABELS={analyze:"Design & analyse",trace:"Construction & trace",mc:"Multiple choice",match:"Matching & classify"};
+const TEST_NAMES={0:"Concept cards",1:"Test 1 · Foundations",2:"Test 2 · Sorting & Hashing",3:"Test 3 · DP & RB-Trees",4:"Test 4 · Greedy & MST"};
+const KIND_LABELS={analyze:"Design & analyse",trace:"Construction & trace",concept:"Quick concepts"};
 
 /* image cards: [test, prob, kind, topic, credits, versioned, noflip, lead] */
 const IMG=[
@@ -252,135 +252,104 @@ const IMG=[
 
 /* MC / matching: front = cropped question image (img/q-t{t}-{prob}-{letter}.png),
    back = answer. `img:false` or a `text{}` entry => text front instead (needs no image). */
-const MCQ=[
- {t:1,prob:"P5",kind:"match",topic:"Paradigms",stem:"Classify: Divide-and-Conquer, Incremental, or Other",img:true,
-  ans:["Incremental","Divide-and-Conquer","Incremental","Divide-and-Conquer","Other","Divide-and-Conquer"]},
- {t:1,prob:"P9",kind:"mc",topic:"Mixed T/F",stem:"True or False?",img:true,tf:true,
-  ans:["True","False","True","False","True","False","False","False","True","True","True","False","False","False",
-       "Stable: InsertionSort & MergeSort","In-place: InsertionSort & HeapSort","True","False"]},
- {t:2,prob:"P5",kind:"match",topic:"Selection",stem:"SELECT (median-of-medians): relation between the nodes — <, >, or ? (unknown)",img:false,
-  text:["a ∘ b","a ∘ c","a ∘ d","a ∘ x","b ∘ c","b ∘ d","b ∘ x","c ∘ d","c ∘ x","d ∘ x"],
-  ans:["?","?","<","<","?","?","?","?","?","<"]},
- {t:2,prob:"P8",kind:"mc",topic:"Mixed T/F",stem:"True or False?",img:true,tf:true,
-  ans:["False","True","False","True","True","False","True","False","True","True","False","False","1 / n","n + 1","k / n"],
-  text:{12:"What is the likelihood a new element x is assigned a particular index i?",
-        13:"How many elements must be added to the hash table to ensure a collision?",
-        14:"With k unique elements already present (no collisions), what is the likelihood the next insert causes a collision?"}},
- {t:2,prob:"P9",kind:"match",topic:"Tree traversals",stem:"Which traversal yields this sequence — Preorder, Postorder, Inorder, or None?",img:true,
-  ans:["Inorder","None of the above","Preorder","None of the above","Postorder"]},
- {t:3,prob:"P6",kind:"match",topic:"Complexity",stem:"Tightest worst-case bound of the best deterministic algorithm",img:true,
-  ans:["O(n)","O(lg n)","O(lg n)","O(n²)","O(n²)","O(n³)","O(n³)","O(2ⁿ)"]},
- {t:3,prob:"P8",kind:"mc",topic:"DP properties",stem:"Select all that apply",img:true,
-  ans:["Overlapping sub-problems & Optimal substructure","Overlapping sub-problems","Optimal substructure","True","True"]},
- {t:3,prob:"P9",kind:"mc",topic:"Red-Black Trees",stem:"Red-Black trees — True or False?",img:true,tf:true,
-  ans:["False","True","False","True","True","True","False","True","False","True","True","False"]},
- {t:4,prob:"P6",kind:"match",topic:"Complexity",stem:"Tightest worst-case bound of the best deterministic algorithm",img:true,
-  ans:["O(n lg n)","O(n)","O(n³)","O(n²)","O(n lg n)","O(n)"]},
- {t:4,prob:"P8",kind:"mc",topic:"Mixed T/F",stem:"True or False?",img:true,tf:true,
-  ans:["True","False","True","True","True","False","True","True","False","False","True","False","True","True"]},
- {t:4,prob:"P9",kind:"match",topic:"Algorithm types",stem:"Classify: Divide-and-Conquer, Dynamic Programming, or Greedy",img:true,
-  ans:["Divide-and-Conquer","Greedy","Dynamic Programming","Greedy","Divide-and-Conquer","Greedy","Dynamic Programming","Greedy","Greedy"]},
+const CONCEPTS=[
+ {topic:"Paradigms",items:[
+  ["QuickSort paradigm?","Divide &amp; Conquer"],
+  ["MergeSort paradigm?","Divide &amp; Conquer"],
+  ["Binary Search paradigm?","Divide &amp; Conquer"],
+  ["SelectionSort paradigm?","Incremental"],
+  ["InsertionSort paradigm?","Incremental"],
+  ["Partition algorithm paradigm?","Other"],
+  ["Huffman Coding paradigm?","Greedy"],
+  ["Prim's algorithm paradigm?","Greedy"],
+  ["Kruskal's algorithm paradigm?","Greedy"],
+  ["Fractional Knapsack paradigm?","Greedy"],
+  ["0-1 Knapsack paradigm?","Dynamic Programming"],
+  ["Rod Cutting paradigm?","Dynamic Programming"],
+  ["Activity Selection paradigm?","Greedy"],
+  ["Shannon-Fano Encoding paradigm?","Divide &amp; Conquer"]]},
+ {topic:"Dynamic Programming",items:[
+  ["Two properties required for Dynamic Programming?","Overlapping subproblems + Optimal substructure"],
+  ["Does Matrix Chain Multiplication have optimal substructure?","Yes"],
+  ["Does Matrix Chain Multiplication have overlapping subproblems?","Yes"],
+  ["Does Rod Cutting have overlapping subproblems?","Yes"],
+  ["Does LCS satisfy greedy choice?","No"]]},
+ {topic:"Sorting",items:[
+  ["Stable sorting algorithms?","InsertionSort, MergeSort"],
+  ["In-place sorting algorithms?","InsertionSort, HeapSort"],
+  ["Merge() runtime?","Θ(n)"],
+  ["MaxHeapify runtime?","Θ(log n)"],
+  ["InsertionSort worst-case runtime?","Θ(n²)"],
+  ["MergeSort runtime?","Θ(n log n)"],
+  ["HeapSort runtime?","Θ(n log n)"]]},
+ {topic:"Heaps",items:[
+  ["Height of an n-element heap?","⌊log₂ n⌋"],
+  ["Parent of index i?","⌊i/2⌋"],
+  ["Left child of i?","2i"],
+  ["Right child of i?","2i+1"],
+  ["Leaf indices in an array heap?","⌊n/2⌋+1 … n"],
+  ["Why is a node a leaf iff 2i &gt; n?","Because no left child exists."]]},
+ {topic:"Binary Trees",items:[
+  ["Preorder traversal?","Root → Left → Right"],
+  ["Inorder traversal?","Left → Root → Right"],
+  ["Postorder traversal?","Left → Right → Root"],
+  ["Inorder traversal of a BST gives?","Sorted order"]]},
+ {topic:"Red-Black Trees",items:[
+  ["Height of an RB tree?","≤ 2·log₂(n+1)"],
+  ["Find in an RB tree?","O(log n)"],
+  ["Delete in an RB tree?","O(log n)"],
+  ["Are leaves red?","No — NIL leaves are black"],
+  ["Can one NIL sentinel be shared by all leaves?","Yes"],
+  ["Root's parent?","NIL"],
+  ["Black-height counts which nodes?","Black nodes on a path from x to a leaf — excluding x, including the NIL leaf"],
+  ["Maximum internal nodes with black-height k?","2^(2k) − 1"],
+  ["Minimum internal nodes with black-height k?","2^k − 1"]]},
+ {topic:"BST",items:[
+  ["Worst-case FIND in a BST?","O(n)"],
+  ["Can every BST be transformed into another BST with the same keys using rotations?","Yes"]]},
+ {topic:"Complexity",items:[
+  ["Huffman algorithm runtime?","O(n log n)"],
+  ["Optimal Activity Selection (already sorted)?","O(n)"],
+  ["Minimum Water Stops?","O(n)"],
+  ["Optimal Polygon Triangulation?","O(n³)"],
+  ["Matrix Chain Multiplication DP?","O(n³)"],
+  ["Longest Common Subsequence DP?","O(n²)"],
+  ["Optimal Rod Cutting DP?","O(n²)"],
+  ["Enumerating all Rod Cutting solutions?","O(2ⁿ)"],
+  ["Multiplying two n×n matrices (classical)?","O(n³)"]]},
+ {topic:"Greedy",items:[
+  ["Huffman's algorithm produces?","An optimal prefix code"],
+  ["Is Shannon-Fano always optimal?","No"],
+  ["US coin system (25,10,5,1) — is greedy optimal?","Yes"],
+  ["Coin system (30,24,12,6) — is greedy optimal?","No"],
+  ["Coin system (27,9,3,1) — is greedy optimal?","Yes"]]},
+ {topic:"Hashing",items:[
+  ["Uniform hash — probability of any given slot?","1 / n"],
+  ["How many insertions guarantee a collision?","n + 1"],
+  ["If k slots are occupied, collision probability?","k / n"]]},
+ {topic:"Asymptotic notation",items:[
+  ["O(g(n)) means?","Grows at most as fast as g"],
+  ["Ω(g(n)) means?","Grows at least as fast as g"],
+  ["Θ(g(n)) means?","Same asymptotic growth as g"],
+  ["o(g(n)) means?","Grows strictly slower than g"],
+  ["ω(g(n)) means?","Grows strictly faster than g"]]},
+ {topic:"Master Theorem",items:[
+  ["Case 1 condition?","f(n) = O(n^(log_b a − ε))"],
+  ["Case 1 result?","Θ(n^(log_b a))"],
+  ["Case 2 condition?","f(n) = Θ(n^(log_b a))"],
+  ["Case 2 result?","Θ(n^(log_b a) · log n)"],
+  ["Case 3 condition?","f(n) = Ω(n^(log_b a + ε)) + regularity condition"],
+  ["Case 3 result?","Θ(f(n))"]]},
+ {topic:"Growth Rates",items:[
+  ["log(2ⁿ) = ?","n"],
+  ["Which grows faster: n log n or n?","n log n"],
+  ["Do 100n and n belong to the same Θ class?","Yes"],
+  ["2^(n+1) = O(2ⁿ)?","Yes"],
+  ["πⁿ = O(n!)?","Yes"],
+  ["2ⁿ = Θ(3ⁿ)?","No"],
+  ["log n = Θ((log n)²)?","No"]]},
 ];
-const _UNUSED_TEXT=[
- {test:1,prob:"P5",kind:"match",topic:"Paradigms",stem:"Classify: Divide-and-Conquer, Incremental, or Other",items:[
-   ["SelectionSort","Incremental"],["QuickSort","Divide-and-Conquer"],["InsertionSort","Incremental"],
-   ["MergeSort","Divide-and-Conquer"],["Partition","Other"],["Binary Search","Divide-and-Conquer"]]},
- {test:1,prob:"P9",kind:"mc",topic:"Mixed T/F",stem:"True or False?",tf:1,items:[
-   ["There exists a heap of 7 distinct elements whose rLR traversal lists them in sorted order.","True"],
-   ["∃ f,g with f(n)=Θ(g(n)) and f(n)=o(g(n)).","False"],
-   ["∃ f,g with f(n)=o(g(n)) and f(n)≠Θ(g(n)).","True"],
-   ["∃ f,g with f(n)=Θ(g(n)) and f(n)≠O(g(n)).","False"],
-   ["∃ f,g with f(n)=Ω(g(n)) and f(n)≠O(g(n)).","True"],
-   ["The runtime of InsertionSort is O(n log n).","False"],
-   ["Formulating InsertionSort recursively improves its runtime.","False"],
-   ["2^{2n} = O(2ⁿ).","False"],
-   ["(log n)^{log n} = Θ(n^{log log n}).","True"],
-   ["2^{n+1} = O(2ⁿ).","True"],
-   ["πⁿ = O(n!).","True"],
-   ["log n = Θ(log²n)  — that is, Θ((log n)²).","False"],
-   ["n^{log n} = Θ(2^{n−1}).","False"],
-   ["2ⁿ = Θ(3ⁿ).","False"],
-   ["Stable (or easily made stable): InsertionSort.","True"],
-   ["Stable (or easily made stable): MergeSort.","True"],
-   ["Stable (or easily made stable): HeapSort.","False"],
-   ["In-place (or easily made in-place): InsertionSort.","True"],
-   ["In-place (or easily made in-place): MergeSort.","False"],
-   ["In-place (or easily made in-place): HeapSort.","True"],
-   ["The runtime of MERGE is O(n).","True"],
-   ["The runtime of MaxHeapify is Θ(n log n).","False"]]},
- {test:2,prob:"P5",kind:"match",topic:"Selection",stem:"SELECT (median-of-medians): relation — < , > , or ? (unknown)",items:[
-   ["a ∘ b","?"],["a ∘ c","?"],["a ∘ d","<"],["a ∘ x","<"],["b ∘ c","?"],
-   ["b ∘ d","?"],["b ∘ x","?"],["c ∘ d","?"],["c ∘ x","?"],["d ∘ x","<"]]},
- {test:2,prob:"P8",kind:"mc",topic:"Mixed T/F",stem:"True or False?",tf:1,items:[
-   ["A full binary tree is complete.","False"],
-   ["A complete binary tree is full.","True"],
-   ["QuickSort with the last element as pivot has worst-case recursion depth Θ(log n).","False"],
-   ["BucketSort runs in expected linear time if the input is uniformly distributed.","True"],
-   ["The minimum, maximum, and median elements can be found in Θ(n) time.","True"],
-   ["ListSearch in a linked list runs in O(1) time.","False"],
-   ["ListPrepend in a linked list runs in O(1) time.","True"],
-   ["ListDelete in a singly linked list runs in O(1) time.","False"],
-   ["ListDelete in a doubly linked list runs in O(1) time.","True"],
-   ["Counting sort is stable.","True"],
-   ["2(n−1) is the lower bound for finding both min and max of n distinct integers.","False"],
-   ["Sorting n integers in [0, n²−1] runs in Ω(n lg n) time.","False"]]},
- {test:2,prob:"P8b",kind:"mc",topic:"Hashing",stem:"Uniform hash h into 1..n — pick the answer",items:[
-   ["Likelihood a new element x is assigned a particular index i.","1/n"],
-   ["How many elements must be added to guarantee a collision.","n + 1"],
-   ["With k unique elements present (no collisions), likelihood the next insert collides.","k / n"]]},
- {test:2,prob:"P9",kind:"match",topic:"Tree traversals",stem:"Which traversal yields this sequence — Preorder, Postorder, Inorder, or None?",items:[
-   ["{C, B, D, A, F, E, H, G, I}","Inorder"],
-   ["{H, D, B, E, F, I, C, G, A}","None of the above"],
-   ["{A, B, C, D, E, F, G, H, I}","Preorder"],
-   ["{A, B, E, C, D, F, G, H, I}","None of the above"],
-   ["{C, D, B, F, H, I, G, E, A}","Postorder"]]},
- {test:3,prob:"P6",kind:"match",topic:"Complexity",stem:"Tightest worst-case bound of the best deterministic algorithm",items:[
-   ["FIND in a BST","O(n)"],["FIND in an RB-tree","O(lg n)"],["DELETE in an RB-tree (given the node)","O(lg n)"],
-   ["Optimal Rod Cutting","O(n²)"],["Longest Common Subsequence","O(n²)"],["Multiplying two n×n matrices","O(n³)"],
-   ["Optimal Matrix-Chain Multiplication","O(n³)"],["Enumerating all Rod-Cutting solutions","O(2ⁿ)"]]},
- {test:3,prob:"P8",kind:"mc",topic:"DP properties",stem:"Select all that apply",items:[
-   ["The two properties every DP-solvable problem exhibits.","Overlapping sub-problems & Optimal substructure"],
-   ["The rod-cutting problem has which property?","Overlapping sub-problems"],
-   ["The matrix-chain problem has which property?","Optimal substructure"],
-   ["Any BST on n numbers can be transformed into any other BST on those numbers using rotations.","True"],
-   ["The matrix-chain multiplication problem exhibits overlapping sub-problems.","True"]]},
- {test:3,prob:"P9",kind:"mc",topic:"Red-Black Trees",stem:"Red-Black trees — True or False?",tf:1,items:[
-   ["A leaf can be three times as deep as another leaf in the same tree.","False"],
-   ["With black-height k, the largest possible number of internal nodes is 2^{2k}−1.","True"],
-   ["With black-height k, the smallest possible number of internal nodes is 2k.","False"],
-   ["With k≥2, the maximum ratio between two subtrees is Θ(2ᵏ).","True"],
-   ["A tree built by RB-Insert with n>1 contains at least one red node.","True"],
-   ["A node's height is the number of edges on a longest path to a leaf.","True"],
-   ["The black-height of x counts the black nodes (including nil and x) on a path from x to a leaf.","False"],
-   ["An RB-tree with n internal nodes has height ≤ 2·lg(n+1).","True"],
-   ["Some leaves can be red.","False"],
-   ["A single sentinel nil[T] can be used for all leaves.","True"],
-   ["The root's parent is nil[T].","True"],
-   ["Deleting a black node requires no fix-up.","False"]]},
- {test:4,prob:"P6",kind:"match",topic:"Complexity",stem:"Tightest worst-case bound of the best deterministic algorithm",items:[
-   ["Huffman's Algorithm","O(n lg n)"],["Activity Selection (input sorted by finish time)","O(n)"],
-   ["Optimal Polygon Triangulation","O(n³)"],["Longest Palindromic Subsequence","O(n²)"],
-   ["Min points so every interval contains one point","O(n lg n)"],["Minimum Water Stops","O(n)"]]},
- {test:4,prob:"P8",kind:"mc",topic:"Mixed T/F",stem:"True or False?",tf:1,items:[
-   ["The binary tree of an optimal prefix code is full.","True"],
-   ["Every graph has a unique MST.","False"],
-   ["Prim's algorithm is an instance of Generic-MST.","True"],
-   ["Kruskal's algorithm is an instance of Generic-MST.","True"],
-   ["The greedy change algorithm for coins (25,10,5,1) is optimal.","True"],
-   ["The greedy change algorithm for coins (30,24,12,6) is optimal.","False"],
-   ["The greedy change algorithm for coins (27,9,3,1) is optimal.","True"],
-   ["Huffman's algorithm creates an optimal prefix code.","True"],
-   ["The Shannon-Fano algorithm creates an optimal prefix code.","False"],
-   ["The longest-common-subsequence problem exhibits the greedy-choice property.","False"],
-   ["Linked-list disjoint sets: MakeSet(x) runs in O(1).","True"],
-   ["Linked-list disjoint sets: Union(x,y) runs in O(1).","False"],
-   ["Linked-list disjoint sets: FindSet(x) runs in O(1).","True"],
-   ["m operations, n of which are MakeSet, take O(m + n·lg n) time.","True"]]},
- {test:4,prob:"P9",kind:"match",topic:"Algorithm types",stem:"Classify: Divide-and-Conquer, Dynamic Programming, or Greedy",items:[
-   ["QuickSort","Divide-and-Conquer"],["Fractional Knapsack","Greedy"],["0-1 Knapsack","Dynamic Programming"],
-   ["Optimal Activity Scheduling","Greedy"],["Shannon-Fano Encoding","Divide-and-Conquer"],["Huffman Encoding","Greedy"],
-   ["Optimal Rod Cutting","Dynamic Programming"],["Prim's Algorithm","Greedy"],["Kruskal's Algorithm","Greedy"]]},
-];
+
 
 /* build unified card list */
 const CARDS=[];
@@ -397,16 +366,12 @@ IMG.forEach(([t,p,kind,topic,cr,versioned,noflip,lead])=>{
       qImg:`${base}-q.png`, aImg:`${base}-a.png`});
   }
 });
-MCQ.forEach(b=>{
-  b.ans.forEach((a,i)=>{
-    const letter=String.fromCharCode(97+i);
-    const asText = (b.text && !Array.isArray(b.text) && b.text[i]!==undefined);   // per-item text override
-    const hasImg = b.img && !asText;
-    const stmt = Array.isArray(b.text) ? b.text[i] : (asText ? b.text[i] : "");
-    CARDS.push({id:`t${b.t}-${b.prob}-${letter}`,type:"mc",t:b.t,prob:b.prob,sub:letter,
-      kind:b.kind,topic:b.topic,stem:b.stem,tf:!!b.tf,
-      qImg: hasImg ? `img/q-t${b.t}-${b.prob.toLowerCase()}-${letter}.png` : null,
-      lead: stmt, ans:a});
+CONCEPTS.forEach(b=>{
+  const slug=b.topic.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+  b.items.forEach(([q,a],i)=>{
+    CARDS.push({id:`c-${slug}-${i}`,type:"concept",t:0,prob:"",sub:"",
+      kind:"concept",topic:b.topic,stem:b.topic,
+      qImg:null, lead:q, ans:a});
   });
 });
 
@@ -430,7 +395,7 @@ function count(over){
 function chip(v,label,n,active,cls){return `<button class="chip ${cls} ${active?'active':''}" data-v="${v}">${label} <span class="n">${n}</span></button>`;}
 function buildChips(){
   let th=chip("all","All tests",count({test:"all"}),fTest==="all","");
-  [1,2,3,4].forEach(t=>th+=chip(t,TEST_NAMES[t],count({test:t}),fTest==t,t==2?"t2":""));
+  [0,1,2,3,4].forEach(t=>th+=chip(t,TEST_NAMES[t],count({test:t}),fTest==t,t==2?"t2":""));
   el.testChips.innerHTML=th;
   let kh=chip("all","All types",count({kind:"all"}),fKind==="all","full");
   Object.keys(KIND_LABELS).forEach(k=>kh+=chip(k,KIND_LABELS[k],count({kind:k}),fKind===k,"full"));
@@ -454,9 +419,10 @@ function renderCard(){
   el.cardIdx.textContent=pos+1; el.cardTot.textContent=deck.length;
   const t2=c.t==2?"t2":"";
   const verBadge = c.ver ? `<span class="badge ver">Version ${c.ver}</span>` : "";
-  const sub = c.type==="mc" ? `<span class="badge topic">${c.prob}${c.sub})</span>` : "";
-  el.fBadges.innerHTML=`<span class="badge test ${t2}">Test ${c.t}</span><span class="badge kind">${KIND_LABELS[c.kind]}</span><span class="badge topic">${c.topic}</span>`+(c.type==="img"?verBadge+`<span class="badge cr">${c.cr} cr</span>`:sub);
-  el.fPnum.textContent=c.type==="img"?(c.prob+(c.ver?" · Version "+c.ver:"")):(c.prob+" · "+c.sub+")");
+  const sub = (c.type!=="img" && c.prob) ? `<span class="badge topic">${c.prob}${c.sub})</span>` : "";
+  const testBadge = c.t===0 ? `<span class="badge test">Concept</span>` : `<span class="badge test ${t2}">Test ${c.t}</span>`;
+  el.fBadges.innerHTML=testBadge+`<span class="badge kind">${KIND_LABELS[c.kind]}</span><span class="badge topic">${c.topic}</span>`+(c.type==="img"?verBadge+`<span class="badge cr">${c.cr} cr</span>`:sub);
+  el.fPnum.textContent=c.type==="img"?(c.prob+(c.ver?" · Version "+c.ver:"")):(c.prob?(c.prob+" · "+c.sub+")"):c.topic);
 
   if(c.type==="img"){
     el.card.style.height="min(82vh,940px)";
@@ -471,11 +437,12 @@ function renderCard(){
     }else{
       el.fBody.innerHTML=`<div class="q-body"><div class="stem">${c.stem}</div><div class="q-lead">${c.lead}</div></div>`;
     }
-    const verd=c.tf?(c.ans==="True"?"verd-t":c.ans==="False"?"verd-f":""):"";
-    el.bBody.innerHTML=`<div class="a-body"><div class="a-lead ${verd}">${c.ans}</div><div class="a-context">${c.stem}</div></div>`;
+    const yes=["True","Yes"].includes(c.ans), no=["False","No"].includes(c.ans);
+    const verd=yes?"verd-t":no?"verd-f":"";
+    el.bBody.innerHTML=`<div class="a-body"><div class="a-lead ${verd}">${c.ans}</div><div class="a-context">${c.lead}</div></div>`;
     el.bHead.textContent="Answer"; el.flipCue.style.display="";
   }
-  el.bTag.textContent=`Test ${c.t} · ${c.prob}`;
+  el.bTag.textContent=c.t===0?c.topic:`Test ${c.t} · ${c.prob}`;
   syncMarks(c);
 }
 function syncMarks(c){el.markKnow.classList.toggle("act",store[c.id]==="know");el.markRev.classList.toggle("act",store[c.id]==="rev");}
@@ -493,11 +460,12 @@ function updateProgress(){const total=deck.length,known=deck.filter(c=>store[c.i
 function renderList(){
   if(!deck.length){el.listview.innerHTML="<div class='empty'>No cards match this filter.</div>";return;}
   el.listview.innerHTML=deck.map((c,i)=>{const st=store[c.id]||"";
-    const label=c.type==="mc"?(c.lead||`${c.stem} → ${c.ans}`):c.lead;
-    const idx=c.type==="img"?(c.prob+(c.ver||"")):c.prob+c.sub;
+    const label=c.lead;
+    const idx=c.type==="img"?(c.prob+(c.ver||"")):(c.prob?c.prob+c.sub:"◆");
     const vb=c.ver?`<span class="badge ver">Ver ${c.ver}</span>`:"";
+    const tb=c.t===0?`<span class="badge test">Concept</span>`:`<span class="badge test ${c.t==2?'t2':''}">Test ${c.t}</span>`;
     return `<div class="litem" data-i="${i}"><div class="lindex">${idx}</div>
-      <div><p class="lq">${label}</p><div class="lmeta"><span class="badge test ${c.t==2?'t2':''}">Test ${c.t}</span><span class="badge kind">${KIND_LABELS[c.kind]}</span><span class="badge topic">${c.topic}</span>${vb}</div></div>
+      <div><p class="lq">${label}</p><div class="lmeta">${tb}<span class="badge kind">${KIND_LABELS[c.kind]}</span><span class="badge topic">${c.topic}</span>${vb}</div></div>
       <div class="lstate ${st}"></div></div>`;}).join("");
   el.listview.querySelectorAll(".litem").forEach(it=>it.onclick=()=>{pos=+it.dataset.i;toggleView(false);el.card.classList.remove("flip");renderCard();});
 }
