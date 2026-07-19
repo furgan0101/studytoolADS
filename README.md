@@ -2,6 +2,16 @@
 
 A self-study flashcard app for the **TUM INHN0008 "Fundamentals of Algorithms and Data Structures"** bonus tests (Bonus Tests 1–4). Every exam problem is a flip-card: the original exam **question** on the front, the **sample solution** on the back.
 
+## What's in the deck
+
+| Group | Contents |
+|---|---|
+| Concept cards | Every multiple-choice / true-false question from all papers, with options, reasoning and a source tag |
+| Test 1–4 | Open-ended problems from Bonus Tests 1–4 (question → sample solution) |
+| Test 5 | Short test 5 — graphs, SCC, SSSP (reconstruction; no published solution) |
+| Final Exam | Open-ended problems (question paper only; no published solution) |
+| Retake Exam | Open-ended problems (question → full worked solution) |
+
 ## Features
 
 - **Authentic exam images** — questions cropped from the actual question sheets; solutions from the sample-solution PDFs (real notation, red-black trees, heaps, MST graphs, DP tables).
