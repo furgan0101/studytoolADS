@@ -6,7 +6,7 @@
 
 | Group | Contents |
 |---|---|
-| Concept cards | Every multiple-choice / true-false question from all papers, with options, reasoning and a source tag |
+| Concept cards | All 232 multiple-choice / true-false / matching questions from all papers, with options, reasoning and a source tag |
 | Test 1–4 | Open-ended problems from Bonus Tests 1–4 (question → sample solution) |
 | Test 5 | Short test 5 — graphs, SCC, SSSP (reconstruction; no published solution) |
 | Final Exam | Open-ended problems (question paper only; no published solution) |

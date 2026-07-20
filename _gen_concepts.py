@@ -11,6 +11,11 @@ REC  = ["O(n)", "O(n lg n)", "O(n^1.5)", "O(n²)", "O(n² lg n)", "O(n³)"]
 TRAV = ["Preorder", "Postorder", "Inorder", "None of the above"]
 CASE3= ["Case 1", "Case 2", "Case 3"]
 ROT5 = ["O(1)", "O(lg n)", "O(n)", "O(n lg n)", "O(n²)"]
+TH5  = ["Θ(1)", "Θ(log n)", "Θ(n)", "Θ(n log n)", "Θ(n²)"]
+SORT4= ["MergeSort", "HeapSort", "InsertionSort", "BubbleSort"]
+REL3 = ["<", ">", "?"]
+MST6 = ["O(lg n)", "O(n)", "O(n lg n)", "O(n^1.5)", "O(n² lg n)", "O(n³)"]
+RT4  = ["O(lg n)", "O(n)", "O(n lg n)", "O(n²)"]
 
 T = []
 def topic(name, opts, items): T.append((name, opts, items))
@@ -40,9 +45,47 @@ topic("Asymptotics & Growth", TF, [
  it("Any recurrence relation can be solved using the Master Method.", "False", "It needs the form aT(n/b)+f(n) and fails in the gap cases, e.g. T(n)=2T(n/2)+n log n.", "Short test 1 · P8c"),
 ])
 
+topic("Complexity of Pseudocode", TH5, [
+ it("EXAMPLE1(n): sum←0; for i←1 to n: for j←1 to n: sum++", "Θ(n²)",
+    "Both loops run n times independently → n·n iterations.", "Bonus test 1 · P1a"),
+ it("EXAMPLE2(n): sum←0; for i←1 to n: for j←1 to i: sum++", "Θ(n²)",
+    "The inner loop runs i times, so the total is 1+2+…+n = n(n+1)/2 = Θ(n²).", "Bonus test 1 · P1b"),
+ it("EXAMPLE3(n): sum←0; i←1; while i ≤ n: sum++; i←2i", "Θ(log n)",
+    "i doubles every round, so it reaches n after lg n steps.", "Bonus test 1 · P1c"),
+ it("FUNC(i,j): if i<j { mid←⌊(i+j)/2⌋; sum++; FUNC(i,mid); FUNC(mid+1,j) }, called as FUNC(1,n)", "Θ(n)",
+    "T(n) = 2T(n/2) + Θ(1) → Master case 1 gives Θ(n): the recursion tree has Θ(n) leaves and O(1) work per node.",
+    "Bonus test 1 · P1d"),
+])
+
+topic("Identify the Sorting Algorithm", SORT4, [
+ it("[8,4,5,1,2,7,6,3] → [4,8,5,1,2,7,6,3] → [4,5,8,1,2,7,6,3] → [1,4,5,8,2,7,6,3] → [1,2,4,5,8,7,6,3]",
+    "InsertionSort",
+    "A sorted prefix grows by one element per step while the unsorted tail is untouched — the signature of InsertionSort.",
+    "Bonus test 1 · P5a"),
+ it("[8,4,5,1,2,7,6,3] → [8,4,7,3,2,5,6,1] → [7,4,6,3,2,5,1,8] → [6,4,5,3,2,1,7,8] → [5,4,1,3,2,6,7,8]",
+    "HeapSort",
+    "The first step build-heaps the array; after that the largest element is parked at the end each round and the suffix grows sorted.",
+    "Bonus test 1 · P5b"),
+])
+
+topic("SELECT — median of medians", REL3, [
+ it("a ◦ b", "?", "a and b sit in different groups, and neither is connected to the other through the arrow chains — the relation is unknown.", "Bonus test 1 · P9a", REL3, "fig-select"),
+ it("a ◦ c", "?", "Both lie above their group medians but in different columns; nothing forces an order between them.", "Bonus test 1 · P9b", REL3, "fig-select"),
+ it("a ◦ d", "<", "d is in the shaded region of elements known to be greater than x, and a is known to be smaller than x, so a < d.", "Bonus test 1 · P9c", REL3, "fig-select"),
+ it("a ◦ x", "<", "a lies in a column whose median is smaller than x, on the smaller side — the arrows give x → … → a, so a < x.", "Bonus test 1 · P9d", REL3, "fig-select"),
+ it("b ◦ c", "?", "b is below its median in a left column, c is above its median in a right column — no arrow path connects them.", "Bonus test 1 · P9e", REL3, "fig-select"),
+ it("b ◦ d", "?", "Both are below their own group medians in different columns, so their order is not determined.", "Bonus test 1 · P9f", REL3, "fig-select"),
+ it("b ◦ x", "?", "b is only known to be below its own group median; that median may be on either side of x.", "Bonus test 1 · P9g", REL3, "fig-select"),
+ it("c ◦ d", "?", "c is above its median and d below its own — the two columns are unordered with respect to each other here.", "Bonus test 1 · P9h", REL3, "fig-select"),
+ it("c ◦ x", "?", "c is above the median of a column whose median is greater than x, which says nothing about c versus x itself.", "Bonus test 1 · P9i", REL3, "fig-select"),
+ it("d ◦ x", ">", "d sits inside the shaded block of elements that the median-of-medians argument guarantees to be larger than x.", "Bonus test 1 · P9j", REL3, "fig-select"),
+])
+
 topic("Recurrences", REC, [
  it("Θ bound for T(n) = 8T(n/2) + n²/2", "O(n³)", "log₂8 = 3 and f(n)=n² = O(n^(3−ε)) → Master case 1 → Θ(n³).", "Retake · P2b"),
  it("Θ bound for T(n) = 27T(n/9) + n", "O(n^1.5)", "log₉27 = 1.5 and f(n)=n = O(n^(1.5−ε)) → Master case 1 → Θ(n^1.5).", "Retake · P2c"),
+ it("Θ bound for T(n) = 4T(n/2) + n²", "O(n² lg n)", "log₂4 = 2 and f(n) = n² = Θ(n²) → Master case 2 → Θ(n² lg n).", "Final Exam · P2b", MST6),
+ it("Θ bound for T(n) = 8T(n/4) + n", "O(n^1.5)", "log₄8 = 1.5 and f(n) = n = O(n^(1.5−ε)) → Master case 1 → Θ(n^1.5).", "Final Exam · P2c", MST6),
 ])
 
 topic("Sorting", TF, [
@@ -109,6 +152,18 @@ topic("Data Structure Operations", DS4, [
  it("DEQUEUE in a queue", "O(1)", "Remove at the head pointer.", "Retake · P1j"),
  it("SEARCH in a sorted array", "O(log n)", "Binary search halves the range each step.", "Retake · P1k"),
  it("SEARCH in a priority queue", "O(n)", "Heap order says nothing about siblings, so an arbitrary key needs a full scan.", "Retake · P1l"),
+ it("INSERT in a linked list (at the head)", "O(1)", "Re-point the head; no traversal is needed.", "Final Exam · P1a"),
+ it("INSERT in a hash table", "O(1)", "Hash the key and prepend it to that bucket's list.", "Final Exam · P1b"),
+ it("INSERT in a binary search tree", "O(n)", "Worst case the BST is a path, so the insertion walks all n nodes.", "Final Exam · P1c"),
+ it("INSERT in a heap", "O(log n)", "Append at the end, then sift up one root-to-leaf path.", "Final Exam · P1d"),
+ it("FIND_MIN in a linked list", "O(n)", "Unordered — every node has to be inspected.", "Final Exam · P1e"),
+ it("FIND_MIN in a hash table", "O(n)", "Hashing destroys order, so all n keys must be scanned.", "Final Exam · P1f"),
+ it("FIND_MIN in a binary search tree", "O(n)", "Walk left until you cannot — that is the height, which is Θ(n) for a degenerate tree.", "Final Exam · P1g"),
+ it("FIND_MIN in a heap", "O(1)", "In a min-heap the minimum is the root.", "Final Exam · P1h"),
+ it("DELETE in a linked list", "O(n)", "Finding the node with the given key is a linear scan.", "Final Exam · P1i"),
+ it("DELETE in a hash table", "O(n)", "Worst case every key collides into one bucket, so the bucket scan is linear.", "Final Exam · P1j"),
+ it("DELETE in a binary search tree", "O(n)", "The search for the node costs the height, which is Θ(n) in the worst case.", "Final Exam · P1k"),
+ it("DELETE in a heap", "O(log n)", "Swap with the last element, shorten the array, then sift down one path.", "Final Exam · P1l"),
 ])
 
 topic("Linked Lists", TF, [
@@ -154,6 +209,7 @@ topic("Dynamic Programming", TF, [
  it("The longest path problem exhibits the optimal substructure property.", "False", "Subpaths of a longest path need not be longest, because vertices may not repeat.", "Short test 3 · P8h"),
  it("Every optimization problem can be solved optimally with dynamic programming.", "False", "DP needs optimal substructure and overlapping subproblems; many problems have neither.", "Short test 3 · P8j"),
  it("Matrix-Chain-Multiplication: any parenthesization of n elements has exactly n−1 pairs of parentheses.", "True", "Induction: multiplying n matrices takes n−1 multiplications and each contributes one pair. (n=3: ((A₁A₂)A₃) has 2.)", "Bonus Test 3 · P5b"),
+ it("Matrix-Chain-Multiplication: any parenthesization of n elements has exactly n pairs of parentheses.", "False", "It is n−1, not n — multiplying n matrices takes n−1 multiplications and each contributes one pair of parentheses.", "Final Exam · P13h"),
 ])
 
 topic("DP Properties", None, [
@@ -201,10 +257,12 @@ topic("Algorithmic Paradigms", PARA3, [
  it("MergeSort", "Divide-and-Conquer", "Split in half, sort each half, then merge.", "Bonus Test 1 · P5d"),
  it("Partition", "Other", "A single linear rearrangement pass — neither recursive nor prefix-growing.", "Bonus Test 1 · P5e"),
  it("Binary Search", "Divide-and-Conquer", "It discards half of the search range at every step.", "Bonus Test 1 · P5f"),
+ it("HeapSort", "Other", "It neither splits the problem in half nor grows a sorted prefix — it repeatedly extracts the max from a heap.", "Bonus test 1 · P6c"),
 ])
 
 topic("Algorithm Types", TYPE3, [
  it("Tarjan's Select", "Divide & Conquer", "Median-of-medians splits into groups of 5 and recurses on one side.", "Retake · P4d"),
+ it("QuickSort", "Divide & Conquer", "Partition splits the array around a pivot, then it recurses on both sides.", "Bonus Test 4 · P9a"),
  it("Fractional Knapsack (thief with fractions of items)", "Greedy", "Taking the best value/weight ratio first is provably safe.", "Bonus Test 4 · P9b"),
  it("0-1 Knapsack (thief with whole items)", "Dynamic Programming", "Indivisible items break the greedy choice, so you need a table over capacity.", "Bonus Test 4 · P9c"),
  it("Optimal Activity Scheduling", "Greedy", "Always picking the earliest finishing time is a safe choice.", "Bonus Test 4 · P9d"),
@@ -231,12 +289,16 @@ topic("Complexity Bounds", CB, [
  it("Longest Palindromic Subsequence", "O(n²)", "It is the LCS of the string with its own reverse.", "Bonus Test 4 · P6d"),
  it("Minimum number of points so every interval contains at least one point", "O(n lg n)", "Sort by right endpoint, then one greedy scan.", "Bonus Test 4 · P6e"),
  it("Minimum Water Stops", "O(n)", "One greedy pass over the stops, taking the farthest reachable each time.", "Bonus Test 4 · P6f"),
+ it("Convex Hull", "O(n lg n)", "Graham scan: sort the points, then one linear stack pass — and Ω(n lg n) is also the lower bound.", "Bonus test 2 · P7e"),
+ it("Optimal Parenthesization", "O(n³)", "Same DP as matrix-chain order: O(n²) subchains, each scanning O(n) split points.", "Bonus test 2 · P7i"),
 ])
 
 topic("Complexity — Search", CA, [
  it("FIND in a BST", "O(n)", "An unbalanced BST can degenerate into a path.", "Bonus Test 3 · P6a"),
  it("FIND in a Red-Black tree", "O(lg n)", "The height is bounded by 2·lg(n+1).", "Bonus Test 3 · P6b"),
  it("DELETE in a Red-Black tree, given a pointer to the node", "O(lg n)", "Splice the node out, then O(log n) fix-up rotations and recolourings.", "Bonus Test 3 · P6c"),
+ it("Worst-case runtime of BST-SUCCESSOR (return the leftmost node of the right subtree, otherwise walk up until x is a left child)",
+    "O(n)", "Both branches follow one root-to-leaf path, and an unbalanced BST has height Θ(n).", "Bonus test 2 · P5b", RT4),
 ])
 
 topic("Complexity — Graphs", CR, [
@@ -250,6 +312,20 @@ topic("Complexity — Graphs", CR, [
  it("Single-source Shortest Path in an unweighted graph", "O(n²)", "BFS is Θ(V+E), and E = O(n²) in terms of n.", "Retake · P9h"),
  it("Single-source Shortest Path in a weighted graph", "O(n² lg n)", "Dijkstra with a binary heap is O((V+E)·lg V).", "Retake · P9i"),
  it("Floyd-Warshall Algorithm", "O(n³)", "A triple loop over all intermediate vertices.", "Retake · P9j"),
+ it("Computing Perfect Authority with an adjacency matrix", "O(n)",
+    "A perfect authority (universal sink) has in-degree n−1 and out-degree 0. Walk the matrix: each of the n−1 probes eliminates one candidate, then verify the survivor in O(n).",
+    "Final Exam · P12a"),
+ it("Computing Perfect Authority with an adjacency list", "O(n²)",
+    "Without O(1) edge lookups you must read the whole adjacency structure, i.e. Θ(V+E) = O(n²).",
+    "Final Exam · P12b"),
+ it("Computing the diameter of a tree", "O(n)",
+    "Two BFS runs: from any vertex find the farthest u, then from u find the farthest v. A tree has E = n−1, so each BFS is Θ(n).",
+    "Final Exam · P12c"),
+ it("Multiply an n×n matrix by a vector", "O(n²)",
+    "One dot product of length n per output entry — n² multiply-adds in total.", "Final Exam · P12e"),
+ it("HeapSort", "O(n lg n)", "Build-Heap is O(n), then n extract-max operations each costing O(lg n).", "Final Exam · P12f"),
+ it("Dijkstra's Algorithm", "O(n² lg n)", "O((V+E)·lg V) with a binary heap, and E = O(n²) when expressed in n alone.", "Final Exam · P12h"),
+ it("Bellman-Ford Algorithm", "O(n³)", "V−1 relaxation passes over all E edges: O(V·E) = n·n² = O(n³).", "Final Exam · P12i"),
 ])
 
 topic("Graphs", TF, [
@@ -267,6 +343,7 @@ topic("Graphs", TF, [
  it("When adding an edge to a directed graph, the number of SCCs decreases by at most 1.", "False", "One edge closing a long chain of SCCs into a cycle can merge many at once.", "Short test 5 · P9g"),
  it("The Vertex Cover algorithm that computes a matching is a 2-approximation.", "True", "Taking both endpoints of each matching edge is ≤ 2×, since OPT needs ≥1 endpoint per edge.", "Final Exam · P13a"),
  it("Every computational problem can be solved in a finite amount of time.", "False", "The halting problem is undecidable.", "Final Exam · P13c"),
+ it("Every problem can be solved in polynomial time (in the size of the input).", "False", "NP-hard problems have no known polynomial algorithm, and undecidable problems have none at all.", "Bonus test 1 · P8j"),
  it("Every problem in the class NP can be verified in polynomial time.", "True", "That is precisely the definition of NP.", "Final Exam · P13d"),
 ])
 
