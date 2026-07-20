@@ -1,6 +1,6 @@
 # Efficient Algorithms — Exam Trainer
 
-A self-study flashcard app for the **TUM INHN0008 "Fundamentals of Algorithms and Data Structures"** bonus tests (Bonus Tests 1–4). Every exam problem is a flip-card: the original exam **question** on the front, the **sample solution** on the back.
+
 
 ## What's in the deck
 
